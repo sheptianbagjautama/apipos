@@ -33,4 +33,5 @@ Route::group([
     'middleware' => 'api',
 ], function () {
     Route::resource('products', 'ProductController')->except('create','edit');
+    Route::resource('orders', 'OrderController')->except('create','edit');
 });
