@@ -28,3 +28,9 @@ Route::group([
     Route::post('refresh', 'JWTAuthController@refresh');
     Route::get('profile', 'JWTAuthController@profile');
 });
+
+Route::group([
+    'middleware' => 'api',
+], function () {
+    Route::resource('products', 'ProductController')->except('create','edit');
+});
