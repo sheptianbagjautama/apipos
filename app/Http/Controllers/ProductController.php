@@ -64,7 +64,7 @@ class ProductController extends Controller
         return response()->json([
             'status'        => true,
             'data'          => $product,
-            'message'       => 'Berhasil menambahkan data produk!'
+            'message'       => 'Successfully create product!'
         ]);
     }
 
@@ -82,7 +82,7 @@ class ProductController extends Controller
             return response([
                 'status'        => true,
                 'data'          => $product,
-                'message'       => 'Produk tidak dapat ditemukan'
+                'message'       => 'Product not found'
             ]); 
         }
 
@@ -120,7 +120,7 @@ class ProductController extends Controller
             return response([
                 'status'        => false,
                 'data'          => $product,
-                'message'       => 'Produk tidak dapat ditemukan'
+                'message'       => 'Product not found!'
             ]); 
         }
 
@@ -145,7 +145,7 @@ class ProductController extends Controller
         return response()->json([
             'status'        => true,
             'data'          => $product,
-            'message'       => 'Berhasil mengubah data produk!'
+            'message'       => 'Successfully update product!'
         ]);
 
 
@@ -164,7 +164,7 @@ class ProductController extends Controller
             return response([
                 'status'        => false,
                 'data'          => $product,
-                'message'       => 'Produk tidak dapat ditemukan'
+                'message'       => 'Product not found!'
             ]); 
         }
 
@@ -179,7 +179,7 @@ class ProductController extends Controller
         return response([
             'status'        => true,
             'data'          => $product,
-            'message'       => 'Produk berhasil di hapus'
+            'message'       => 'Successfully delete product'
         ]); 
     }
 }

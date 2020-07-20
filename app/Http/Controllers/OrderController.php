@@ -11,6 +11,10 @@ use Validator;
 
 class OrderController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +25,7 @@ class OrderController extends Controller
         $orders = Order::with('products')->get();
         return response([
             'status'    => true,
-            'message'   => 'Berhasil mendapatkan semua data order!',
+            'message'   => 'Successfully get all orders!',
             'data'      => $orders    
         ]);
     }
