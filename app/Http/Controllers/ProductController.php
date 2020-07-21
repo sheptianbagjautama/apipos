@@ -41,6 +41,9 @@ class ProductController extends Controller
             'original_price' => 'required',
             'discount_price' => 'required',
             'image' => 'required',
+            'stock' => 'required',
+            'category_id' => 'required',
+            'sub_category_id' => 'required',
         ]);
 
         if($validator->fails()) {
@@ -50,6 +53,9 @@ class ProductController extends Controller
         $product = new Product;
         $product->name = $request->name;
         $product->original_price = $request->original_price;
+        $product->stock = $request->stock;
+        $product->category_id = $request->category_id;
+        $product->sub_category_id = $request->sub_category_id;
         if($request->has('discount_price')) {
             $product->discount_price = $request->discount_price;
         }
@@ -106,6 +112,9 @@ class ProductController extends Controller
             'name' => 'required',
             'original_price' => 'required',
             'discount_price' => 'required',
+            'stock' => 'required',
+            'category_id' => 'required',
+            'sub_category_id' => 'required',
         ]);
 
         if($validator->fails()) {
@@ -125,6 +134,9 @@ class ProductController extends Controller
         }
 
         $product->name = $request->name;
+        $product->stock = $request->stock;
+        $product->category_id = $request->category_id;
+        $product->sub_category_id = $request->sub_category_id;
         $product->original_price = $request->original_price;
         if($request->has('discount_price')) {
             $product->discount_price = $request->discount_price;

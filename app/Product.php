@@ -11,6 +11,9 @@ class Product extends Model
         'original_price',
         'discount_price',
         'image',
+        'stock',
+        'category_id',
+        'sub_category_id',
     ];
 
     public function orders(){
