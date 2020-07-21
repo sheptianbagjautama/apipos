@@ -35,4 +35,5 @@ Route::group([
     Route::resource('products', 'ProductController')->except('create','edit');
     Route::resource('orders', 'OrderController')->except('create','edit','update','delete','show');
     Route::resource('categories', 'CategoryController')->except('create','edit');
+    Route::resource('subcategories', 'SubcategoryController')->except('create','edit');
 });
