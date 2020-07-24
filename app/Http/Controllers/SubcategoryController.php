@@ -21,6 +21,9 @@ class SubcategoryController extends Controller
     {
         $subcategories = Subcategory::all();
         // $subcategories = Subcategory::with('category')->get();
+        foreach ($subcategories as $subcategory) {
+            $subcategory['image'] = asset('subcategories/'.$subcategory->image);
+        }
         return response([
             'status' => true,
             'message' => 'Successfully get all subcategories!',
@@ -49,7 +52,8 @@ class SubcategoryController extends Controller
         $validator = Validator::make($request->all(),[
             'name'          => 'required',
             'category_id'   => 'required',
-            'status'        => 'required'
+            'status'        => 'required',
+            'image'         => 'required',
         ]);
 
         if($validator->fails()) {
@@ -60,6 +64,12 @@ class SubcategoryController extends Controller
         $subcategory->name = $request->name;
         $subcategory->category_id = $request->category_id;
         $subcategory->status = $request->status;
+
+        if($request->hasFile('image')) {
+            $imageName = time().'.'.$request->image->extension();
+            $request->image->move(public_path('subcategories'), $imageName);
+            $subcategory->image = $imageName;
+        }
         $subcategory->save();
 
         return response()->json([
@@ -135,6 +145,18 @@ class SubcategoryController extends Controller
         $subcategory->name = $request->name;
         $subcategory->category_id = $request->category_id;
         $subcategory->status = $request->status;
+
+        if ($request->hasFile('image')) {
+            $filePath = public_path('subcategories/').$subcategory->image;
+
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+            $imageName = time().'.'.$request->image->extension();
+            $request->image->move(public_path('subcategories'), $imageName);
+            $subcategory->image = $imageName;
+        } 
+
         $subcategory->save();
 
         return response()->json([
@@ -159,6 +181,13 @@ class SubcategoryController extends Controller
                 'data'          => $subcategory,
                 'message'       => 'Subcategory not found!'
             ]); 
+        }
+
+        if (!empty($subcategory->image)) {
+            $filePath = public_path('subcategories/').$subcategory->image;
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
         }
 
         $subcategory->delete();

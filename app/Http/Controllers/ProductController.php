@@ -22,6 +22,10 @@ class ProductController extends Controller
     {
         // $products = Product::all();
         $products = Product::with('category', 'sub_category')->get();
+
+        foreach ($products as $product) {
+            $product['image'] = asset('products/'.$product->image);
+        }
         return response()->json([
             'status'        => true,
             'data'          => $products,
@@ -40,7 +44,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'original_price' => 'required',
-            'discount_price' => 'required',
+            // 'discount_price' => 'required',
             'image' => 'required',
             'stock' => 'required',
             'category_id' => 'required',
@@ -52,14 +56,32 @@ class ProductController extends Controller
         }
 
         $product = new Product;
+
+        if($request->has('discount')){
+            if($request->discount >= 100) {
+                return response()->json([
+                    'status'        => 'DISCOUNT_VALIDATION',
+                    'data'          => null,
+                    'message'       => 'Can more than 100%!'
+                ]);
+            }
+
+            $calculation_discount = ($request->original_price * $request->discount) / 100;
+            $result_discount = $request->original_price - $calculation_discount;
+            $product->discount_price = $result_discount; 
+            $product->discount = $request->discount;
+        }
+
         $product->name = $request->name;
         $product->original_price = $request->original_price;
         $product->stock = $request->stock;
         $product->category_id = $request->category_id;
         $product->sub_category_id = $request->sub_category_id;
-        if($request->has('discount_price')) {
-            $product->discount_price = $request->discount_price;
-        }
+
+        // if($request->has('discount_price')) {
+        //     $product->discount_price = $request->discount_price;
+        // }
+
         if($request->hasFile('image')) {
             // $imageName = time().'_'.$request->name.'.'.$request->image->extension();
             $imageName = time().'.'.$request->image->extension();
@@ -112,7 +134,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'original_price' => 'required',
-            'discount_price' => 'required',
+            // 'discount_price' => 'required',
             'stock' => 'required',
             'category_id' => 'required',
             'sub_category_id' => 'required',
@@ -134,14 +156,31 @@ class ProductController extends Controller
             ]); 
         }
 
+        if($request->has('discount')){
+
+            if($request->discount >= 100) {
+                return response()->json([
+                    'status'        => 'DISCOUNT_VALIDATION',
+                    'data'          => null,
+                    'message'       => 'Can more than 100%!'
+                ]);
+            }
+            
+            $calculation_discount = ($request->original_price * $request->discount) / 100;
+            $result_discount = $request->original_price - $calculation_discount;
+            $product->discount_price = $result_discount; 
+            $product->discount = $request->discount;
+        }
+
         $product->name = $request->name;
         $product->stock = $request->stock;
         $product->category_id = $request->category_id;
         $product->sub_category_id = $request->sub_category_id;
         $product->original_price = $request->original_price;
-        if($request->has('discount_price')) {
-            $product->discount_price = $request->discount_price;
-        }
+
+        // if($request->has('discount_price')) {
+        //     $product->discount_price = $request->discount_price;
+        // }
 
         if ($request->hasFile('image')) {
             $filePath = public_path('products/').$product->image;
@@ -195,4 +234,48 @@ class ProductController extends Controller
             'message'       => 'Successfully delete product'
         ]); 
     }
+
+    public function searchBySubcategory($id){
+        $products = Product::with('category', 'sub_category')->where('sub_category_id',$id)->get();
+
+        foreach ($products as $product) {
+            $product['image'] = asset('products/'.$product->image);
+        }
+
+        return response()->json([
+            'status'        => true,
+            'data'          => $products,
+            'message'       => 'OK'
+        ]);
+    }
+
+    public function searchByCategory($id){
+        $products = Product::with('category', 'sub_category')->where('category_id',$id)->get();
+
+        foreach ($products as $product) {
+            $product['image'] = asset('products/'.$product->image);
+        }
+
+        return response()->json([
+            'status'        => true,
+            'data'          => $products,
+            'message'       => 'OK'
+        ]);
+    }
+
+    public function searchByName($name){
+        $products = Product::with('category', 'sub_category')->where('name','like','%'.$name.'%')->get();
+
+        foreach ($products as $product) {
+            $product['image'] = asset('products/'.$product->image);
+        }
+
+        return response()->json([
+            'status'        => true,
+            'data'          => $products,
+            'message'       => 'OK'
+        ]);
+    }
+
+    
 }

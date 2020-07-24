@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,4 +37,11 @@ Route::group([
     Route::resource('orders', 'OrderController')->except('create','edit','update','delete','show');
     Route::resource('categories', 'CategoryController')->except('create','edit');
     Route::resource('subcategories', 'SubcategoryController')->except('create','edit');
+    Route::get('search-subcategory/{sub_category_id}', 'ProductController@searchBySubcategory')->name('search.product.subcategory');
+    Route::get('search-category/{category_id}', 'ProductController@searchByCategory')->name('search.product.category');
+    Route::get('search-name/{name}', 'ProductController@searchByName')->name('search.product.name');
+});
+
+Route::get('testing/{id}', function ($id) {
+    return 'Bambang'.$id;
 });
