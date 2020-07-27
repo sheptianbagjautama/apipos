@@ -48,6 +48,10 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        // return response()->json([
+        //     'data' => $request->all(),
+        //     // 'count' => count($request->carts)
+        // ]);
         $carts = $request->carts;
 
         if (count($carts) < 1) {
@@ -71,10 +75,10 @@ class OrderController extends Controller
         foreach ($carts as $value) {
             $product = Product::find($value['product_id']);
             if($product) {
-                if ($product->discount_price !== null) {
-                    $subtotal = ($product->original_price - $product->discount_price) * $value['qty'] ;
+                if ($product->discount !== null || $product->discount != '') {
+                    $subtotal = $product->discount_price * $value['qty'] ;
                 } else {
-                    $subtotal = $value['qty'] * $product->original_price;
+                    $subtotal = $product->original_price * $value['qty'];
                 }
                 $total_price += $subtotal;
                 $quantity += $value['qty'];
