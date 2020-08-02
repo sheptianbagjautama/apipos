@@ -23,9 +23,12 @@ class ProductController extends Controller
         // $products = Product::all();
         $products = Product::with('category', 'sub_category')->get();
 
-        foreach ($products as $product) {
-            $product['image'] = asset('products/'.$product->image);
-        }
+        // If use sharehosting or vps you can use this code 
+        // I didnt use because deploy on heroku, which is in heroku we cannot upload image so i will generate image from asset angular and then
+        // synchronized all of image same value in field image at table product
+        // foreach ($products as $product) {
+        //     $product['image'] = asset('products/'.$product->image);
+        // }
         return response()->json([
             'status'        => true,
             'data'          => $products,
@@ -51,14 +54,14 @@ class ProductController extends Controller
             'sub_category_id' => 'required',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
         $product = new Product;
 
-        if($request->has('discount')){
-            if($request->discount >= 100) {
+        if ($request->has('discount')) {
+            if ($request->discount >= 100) {
                 return response()->json([
                     'status'        => 'DISCOUNT_VALIDATION',
                     'data'          => null,
@@ -68,7 +71,7 @@ class ProductController extends Controller
 
             $calculation_discount = ($request->original_price * $request->discount) / 100;
             $result_discount = $request->original_price - $calculation_discount;
-            $product->discount_price = $result_discount; 
+            $product->discount_price = $result_discount;
             $product->discount = $request->discount;
         }
 
@@ -82,9 +85,9 @@ class ProductController extends Controller
         //     $product->discount_price = $request->discount_price;
         // }
 
-        if($request->hasFile('image')) {
+        if ($request->hasFile('image')) {
             // $imageName = time().'_'.$request->name.'.'.$request->image->extension();
-            $imageName = time().'.'.$request->image->extension();
+            $imageName = time() . '.' . $request->image->extension();
             $request->image->move(public_path('products'), $imageName);
             $product->image = $imageName;
         }
@@ -107,12 +110,12 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
 
-        if($product == null) {
+        if ($product == null) {
             return response([
                 'status'        => true,
                 'data'          => $product,
                 'message'       => 'Product not found'
-            ]); 
+            ]);
         }
 
         return response([
@@ -140,7 +143,7 @@ class ProductController extends Controller
             'sub_category_id' => 'required',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
@@ -153,22 +156,22 @@ class ProductController extends Controller
                 'status'        => false,
                 'data'          => $product,
                 'message'       => 'Product not found!'
-            ]); 
+            ]);
         }
 
-        if($request->has('discount')){
+        if ($request->has('discount')) {
 
-            if($request->discount >= 100) {
+            if ($request->discount >= 100) {
                 return response()->json([
                     'status'        => 'DISCOUNT_VALIDATION',
                     'data'          => null,
                     'message'       => 'Can more than 100%!'
                 ]);
             }
-            
+
             $calculation_discount = ($request->original_price * $request->discount) / 100;
             $result_discount = $request->original_price - $calculation_discount;
-            $product->discount_price = $result_discount; 
+            $product->discount_price = $result_discount;
             $product->discount = $request->discount;
         }
 
@@ -183,15 +186,15 @@ class ProductController extends Controller
         // }
 
         if ($request->hasFile('image')) {
-            $filePath = public_path('products/').$product->image;
+            $filePath = public_path('products/') . $product->image;
 
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
-            $imageName = time().'.'.$request->image->extension();
+            $imageName = time() . '.' . $request->image->extension();
             $request->image->move(public_path('products'), $imageName);
             $product->image = $imageName;
-        } 
+        }
         $product->save();
 
         return response()->json([
@@ -199,8 +202,6 @@ class ProductController extends Controller
             'data'          => $product,
             'message'       => 'Successfully update product!'
         ]);
-
-
     }
 
     /**
@@ -217,11 +218,11 @@ class ProductController extends Controller
                 'status'        => false,
                 'data'          => $product,
                 'message'       => 'Product not found!'
-            ]); 
+            ]);
         }
 
         if (!empty($product->image)) {
-            $filePath = public_path('products/').$product->image;
+            $filePath = public_path('products/') . $product->image;
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
@@ -232,15 +233,16 @@ class ProductController extends Controller
             'status'        => true,
             'data'          => $product,
             'message'       => 'Successfully delete product'
-        ]); 
+        ]);
     }
 
-    public function searchBySubcategory($id){
-        $products = Product::with('category', 'sub_category')->where('sub_category_id',$id)->get();
+    public function searchBySubcategory($id)
+    {
+        $products = Product::with('category', 'sub_category')->where('sub_category_id', $id)->get();
 
-        foreach ($products as $product) {
-            $product['image'] = asset('products/'.$product->image);
-        }
+        // foreach ($products as $product) {
+        //     $product['image'] = asset('products/' . $product->image);
+        // }
 
         return response()->json([
             'status'        => true,
@@ -249,26 +251,13 @@ class ProductController extends Controller
         ]);
     }
 
-    public function searchByCategory($id){
-        $products = Product::with('category', 'sub_category')->where('category_id',$id)->get();
+    public function searchByCategory($id)
+    {
+        $products = Product::with('category', 'sub_category')->where('category_id', $id)->get();
 
-        foreach ($products as $product) {
-            $product['image'] = asset('products/'.$product->image);
-        }
-
-        return response()->json([
-            'status'        => true,
-            'data'          => $products,
-            'message'       => 'OK'
-        ]);
-    }
-
-    public function searchByName($name){
-        $products = Product::with('category', 'sub_category')->where('name','like','%'.$name.'%')->get();
-
-        foreach ($products as $product) {
-            $product['image'] = asset('products/'.$product->image);
-        }
+        // foreach ($products as $product) {
+        //     $product['image'] = asset('products/' . $product->image);
+        // }
 
         return response()->json([
             'status'        => true,
@@ -277,5 +266,18 @@ class ProductController extends Controller
         ]);
     }
 
-    
+    public function searchByName($name)
+    {
+        $products = Product::with('category', 'sub_category')->where('name', 'like', '%' . $name . '%')->get();
+
+        // foreach ($products as $product) {
+        //     $product['image'] = asset('products/' . $product->image);
+        // }
+
+        return response()->json([
+            'status'        => true,
+            'data'          => $products,
+            'message'       => 'OK'
+        ]);
+    }
 }
